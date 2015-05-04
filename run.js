@@ -39,11 +39,9 @@ logger.configure(
 );
 
 var runner = require('./lib/runner')
-  , format  = require('util').format
   , path    = require('path')
   , fs      = require('fs')
   , macro   = path.join( process.cwd(), args.macro )
-  , csv     = fs.createWriteStream(args.csv, {'flags': 'a'})
   ;
 
 try {
@@ -53,16 +51,9 @@ try {
     process.exit(1);
 }
 
-csv.write("agent-id,step-name,req-id-in-step,dur,status-code,url,hard-error,start-time,end-time\n");
-
 macro.total = args.total;
-
-macro.onResult = function(rslt) {
-    csv.write( format("%s,%s,%s,%s,%s,%s,%s,%s,%s\n", rslt.aid, rslt.step, rslt.rid, rslt.dur, rslt.statusCode, rslt.url, rslt.error, rslt.starttime, rslt.endtime) );
-}
+macro.csv   = args.csv;
 
 runner(macro, function(e) {
     //TODO final stats
-
-    csv.end();
 })

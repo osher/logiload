@@ -1,4 +1,7 @@
 test
+results
+macros
 .npmignore
 .hgignore
 *.njsproj
+*.log
