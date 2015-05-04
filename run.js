@@ -18,6 +18,12 @@ var logger  = require('log4js')
         , describe : "path to output CSV results"
         , default  : "./results/reqStats.csv"
         }
+      , i :
+        { alias    : "interval"
+        , describe : "interval between start users"
+        , type     : "number"
+        , default  : 20
+        }
       , l : 
         { alias    : "log-level"
         , describe : "log4js default level DEBUG|INFO|WARN|ERROR|FATAL"
@@ -38,9 +44,10 @@ logger.configure(
   }
 );
 
+
+
 var runner = require('./lib/runner')
   , path    = require('path')
-  , fs      = require('fs')
   , macro   = path.join( process.cwd(), args.macro )
   ;
 
@@ -51,9 +58,10 @@ try {
     process.exit(1);
 }
 
-macro.total = args.total;
-macro.csv   = args.csv;
-
+macro.total    = args.total;
+macro.csv      = args.csv;
+macro.interval = args.interval
 runner(macro, function(e) {
     //TODO final stats
+    log[ e ? "error" : "info" ]("Complete with", e || "SUCCESS");
 })
