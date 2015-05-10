@@ -1,37 +1,6 @@
+#!/usr/bin/env node
 var logger  = require('log4js')
-  , log     = logger.getLogger('run')
-  , args    = 
-    require('yargs')
-    .options(
-      { m : 
-        { alias    : "macro"
-        , describe : "the macro js module to require and run"
-        , default  : "./macros/macro"
-        }
-      , t : 
-        { alias    : "total"
-        , describe : "total times the scenario should run"
-        , default  : 1
-        }
-      , c :
-        { alias    : "csv"
-        , describe : "path to output CSV results"
-        , default  : "./results/reqStats.csv"
-        }
-      , i :
-        { alias    : "interval"
-        , describe : "interval between start users"
-        , type     : "number"
-        , default  : 20
-        }
-      , l : 
-        { alias    : "log-level"
-        , describe : "log4js default level DEBUG|INFO|WARN|ERROR|FATAL"
-        , default  : "INFO"
-        }
-      }
-    )
-    .argv
+  , args    = require('./lib/args').from(process.argv)
   ;
 logger.configure(
   { levels: 
@@ -44,24 +13,33 @@ logger.configure(
   }
 );
 
-
-
-var runner = require('./lib/runner')
-  , path    = require('path')
+var path    = require('path')
+  , o       = require('o-core')
+  , runner  = require('./lib/runner')
+  , log     = logger.getLogger('run')
   , macro   = path.join( process.cwd(), args.macro )
+  , starttime
   ;
 
+log.info("loading macro: ", macro);
+
+//load macro file synchronously
 try {
     macro  = require(macro);
 } catch (ex) {
-    console.log("cannot find macro [%s]\nLooking in folder: [%s]", args.macro, macro );
-    process.exit(1);
+    log.fatal("cannot find macro [%s]\nLooking in folder: [%s]", args.macro, macro );
+    return process.exit(1)
 }
 
-macro.total    = args.total;
-macro.csv      = args.csv;
-macro.interval = args.interval
-runner(macro, function(e) {
+//merge execution options
+if (!macro.options) 
+    macro.options = {};
+o.merge(macro.options, args);
+
+log.debug( "effective options: ", macro.options );
+
+starttime = Date.now();
+runner(macro, function(e, macro) {
     //TODO final stats
-    log[ e ? "error" : "info" ]("Complete with", e || "SUCCESS");
+    log[ e ? "error" : "info" ]("Complete in [%ss], with ", (Date.now() - starttime ) / 1000, e || "SUCCESS");
 })

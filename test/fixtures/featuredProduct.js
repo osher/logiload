@@ -33,7 +33,10 @@ var params =
   ;
 
 module.exports = 
-  { params  : params
+  { { options: 
+      { params  : params
+      }
+    }
   , scenarios: 
     { featuedProduct:
       [ home
