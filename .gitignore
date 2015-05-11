@@ -3,3 +3,4 @@ sandbox/*
 log/*
 results/*
 macros/*
+*.tgz

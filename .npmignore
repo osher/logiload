@@ -5,3 +5,4 @@ macros
 .hgignore
 *.njsproj
 *.log
+*.tgz
