@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 var logger  = require('log4js')
-  , args    = require('./lib/args').from(process.argv)
+  , args    = require('../lib/args').from(process.argv)
   ;
 logger.configure(
   { levels: 
@@ -15,7 +15,7 @@ logger.configure(
 
 var path    = require('path')
   , o       = require('o-core')
-  , runner  = require('./lib/runner')
+  , runner  = require('../lib/runner')
   , log     = logger.getLogger('run')
   , macro   = path.join( process.cwd(), args.macro )
   , starttime
