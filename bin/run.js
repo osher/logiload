@@ -42,5 +42,6 @@ starttime = Date.now();
 runner(macro, function(e, macro) {
     //TODO final stats
     log[ e ? "error" : "info" ]("Complete in [%ss], with ", (Date.now() - starttime ) / 1000, e || "SUCCESS");
+    log.info("stats:\n", macro.stats);
     if (macro.stats.errored) log.warn("Counted total of [%s] errors", macro.stats.errored);
 })
