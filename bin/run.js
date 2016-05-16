@@ -15,10 +15,10 @@ logger.configure(
 
 var path    = require('path')
   , o       = require('o-core')
-  , runner  = require('../lib/runner')
   , log     = logger.getLogger('run')
   , macro   = path.join( process.cwd(), args.macro )
   , starttime
+  , runner
   ;
 
 log.info("loading macro: ", macro);
@@ -39,9 +39,12 @@ o.merge(macro.options, args);
 log.debug( "effective options: ", macro.options );
 
 starttime = Date.now();
-runner(macro, function(e, macro) {
+runner = require('../lib/runner')(macro, function(e, macro) {
     //TODO final stats
     log[ e ? "error" : "info" ]("Complete in [%ss], with ", (Date.now() - starttime ) / 1000, e || "SUCCESS");
     log.info("stats:\n", macro.stats);
     if (macro.stats.errored) log.warn("Counted total of [%s] errors", macro.stats.errored);
-})
+});
+
+process.on('SIGINT' , runner.stop );
+process.on('SIGTERM', runner.stop );
